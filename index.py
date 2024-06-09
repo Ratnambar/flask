@@ -2,7 +2,11 @@
 from flask import Flask, jsonify, request
 from flask_restful import Resource
 from app import db
-from models import User
+from models import User1
+from bson.objectid import ObjectId
+import uuid
+from hashlib import sha256
+
 
 
 
@@ -32,8 +36,8 @@ from models import User
 class UserCreations(Resource):
 	def post(self):
 		if request.method == "POST":
-			user = User(
-				id = request.form["id"],
+			user = User1(
+				id = sha256(request.form['id'].encode()).hexdigest(),
 				username = request.form["username"],
 				email = request.form["email"])
 			db.session.add(user)
@@ -43,6 +47,6 @@ class UserCreations(Resource):
 
 class UsersList(Resource):
 	def get(self):
-		users = db.session.execute(db.select(User).order_by(User.username)).scalars()
+		users = db.session.execute(db.select(User1).order_by(User1.username)).scalars()
 		data = [user.to_dict() for user in users]
 		return jsonify(data=data)
